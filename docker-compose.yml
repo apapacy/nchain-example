@@ -1,0 +1,21 @@
+version: "3"
+services:
+  nginx:
+    container_name: d_extras
+    build:
+      context: ./docker/nginx
+      args:
+        - UID
+    ports:
+      - 8003:80
+      - 443:443
+    volumes:
+      - ./docker/nginx/log/:/var/log/nginx/
+      - ./docker/nginx/localhost:/etc/nginx/sites-enabled/localhost
+      - ./www:/var/www/html
+    links:
+      - redis
+  redis:
+    container_name: d_redis
+    build:
+      context: ./docker/redis

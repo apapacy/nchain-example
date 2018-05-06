@@ -1,0 +1,34 @@
+server {
+	listen 80;
+	listen [::]:80;
+
+	root /var/www/html;
+
+	index index.html index.htm index.nginx-debian.html;
+
+	server_name localhost;
+
+  nchan_redis_url "redis://redis";
+  nchan_storage_engine "redis";
+  nchan_message_buffer_length 100;
+  nchan_message_timeout 5s;
+
+  location = /sub {
+    nchan_subscriber;
+    nchan_channel_id $arg_id;
+    nchan_use_redis on;
+  }
+
+  location = /pub {
+    nchan_publisher;
+    nchan_channel_id $arg_id;
+    nchan_use_redis on;
+  }
+
+	location / {
+		# First attempt to serve request as file, then
+		# as directory, then fall back to displaying a 404.
+		try_files $uri $uri/ =404;
+	}
+
+}
