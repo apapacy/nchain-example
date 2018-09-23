@@ -1,3 +1,6 @@
+upstream my_redis_server {
+	nchan_redis_server "redis://redis";
+}
 server {
 	listen 80;
 	listen [::]:80;
@@ -8,20 +11,21 @@ server {
 
 	server_name localhost;
 
-  nchan_redis_url "redis://redis";
   nchan_storage_engine "redis";
   nchan_message_buffer_length 100;
-  nchan_message_timeout 5s;
+  nchan_message_timeout 5m;
 
   location = /sub {
     nchan_subscriber;
     nchan_channel_id $arg_id;
+	  nchan_redis_pass my_redis_server;
     nchan_use_redis on;
   }
 
   location = /pub {
     nchan_publisher;
     nchan_channel_id $arg_id;
+		nchan_redis_pass my_redis_server;
     nchan_use_redis on;
   }
 
